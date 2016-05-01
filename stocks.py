@@ -33,3 +33,22 @@ class network:
 
     # Initialize weight matrix between hidden units and outputs
     self.output_weights = zeros(self.hidden, self.outputs)
+
+  def update(self, inputs):
+    # Compute activation for all inputs except bias
+    for neuron in range(self.inputs - 1):
+      self.input_activations[neurons]
+
+    # Compute activation for all hidden units
+    for unit in range(self.hidden):
+      sum = 0.0
+      for input in range(self.inputs):
+        sum += self.input_activations[input] * self.input_weights[input][unit] 
+      self.hidden_activations[input] = sigmoid(sum)
+
+    # Compute activation for all output units
+    for output in range(self.outputs):
+      sum = 0.0
+      for hidden in range(self.hidden):
+        sum += self.hidden_activations[hidden] * self.output_weights[hidden][output]
+      self.outputs_activations[output] = sigmoid(sum)
