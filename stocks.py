@@ -34,6 +34,9 @@ class network:
     # Initialize weight matrix between hidden units and outputs
     self.output_weights = zeros(self.hidden, self.outputs)
 
+    # Learning rate alpha
+    self.alpha = 0.5
+
   def update(self, inputs):
     # Compute activation for all inputs except bias
     for neuron in range(self.inputs - 1):
@@ -52,3 +55,43 @@ class network:
       for hidden in range(self.hidden):
         sum += self.hidden_activations[hidden] * self.output_weights[hidden][output]
       self.outputs_activations[output] = sigmoid(sum)
+
+  def backpropagate(self, targets):
+    # Compute output error
+    delta_output = [0.0] * self.outputs
+    for output in range(self.outputs):
+      error = targets[output] - self.outputs_activations[output]
+      delta_output[output] = deltaSigmoid(self.outputs_activations[output]) * error
+
+    # Compute hidden unit error
+    delta_hidden = [0.0] * self.hidden
+    for hidden in range(self.hidden):
+      error = 0.0
+      for output in range(self.outputs):
+        error += delta_output[output] * self.output_weights[hidden][output]
+      delta_hidden[hidden] = deltaSigmoid(self.hidden_activations[hidden]) * error
+
+    # Update the input weights
+    for input in range(self.inputs):
+      for hidden in range(self.hidden):
+        update = delta_hidden[hidden] * self.input_activations[input]
+        self.input_weights[input][hidden] + self.alpha * update
+
+    # Compute total error
+    error = 0.0
+    for target in range(len(targets)):
+      error += 0.5 * (targets[target] - self.outputs_activations[target]) ** 2
+    return error
+
+  def test(self, patterns):
+    for pattern in patterns:
+      print p[0], '->', self.update(p[0])
+
+  def weights(self):
+    print 'Input weights'
+    for input in range(self.inputs):
+      print self.input_weights[input]
+    print 'Output Weights'
+    for hidden in range(self.hidden):
+      print self.output_weights[hidden]
+
