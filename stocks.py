@@ -1,12 +1,12 @@
 import math
-import random
 from numpy import zeros
+from numpy import random
 
 def sigmoid(x):
-  return math.tanh(x)
+    return math.tanh(x)
 
 def deltaSigmoid(y):
-  return 1.0 - y**2
+    return 1.0 - y**2
 
 class network:
   def __init__(self, inputs, hidden, outputs):
@@ -27,27 +27,30 @@ class network:
 
     # Initialize activation for output units
     self.outputs_activations = [1.0] * self.outputs
-
+    
     # Initialize weight matrix between inputs and hidden units
-    self.input_weights = zeros(self.inputs, self.hidden)
+    self.input_weights = random.rand(self.inputs, self.hidden)
 
     # Initialize weight matrix between hidden units and outputs
-    self.output_weights = zeros(self.hidden, self.outputs)
+    self.output_weights = random.rand(self.hidden, self.outputs)
 
     # Learning rate alpha
     self.alpha = 0.5
 
+    # Iterations to train network for
+    self.iterations = 1000
+
   def update(self, inputs):
     # Compute activation for all inputs except bias
-    for neuron in range(self.inputs - 1):
-      self.input_activations[neurons]
+    for input in range(self.inputs - 1):
+      self.input_activations[input] = inputs[input]
 
     # Compute activation for all hidden units
-    for unit in range(self.hidden):
+    for hidden in range(self.hidden):
       sum = 0.0
       for input in range(self.inputs):
-        sum += self.input_activations[input] * self.input_weights[input][unit] 
-      self.hidden_activations[input] = sigmoid(sum)
+          sum += self.input_activations[input] * self.input_weights[input][hidden]
+      self.hidden_activations[hidden] = sigmoid(sum)
 
     # Compute activation for all output units
     for output in range(self.outputs):
@@ -56,26 +59,34 @@ class network:
         sum += self.hidden_activations[hidden] * self.output_weights[hidden][output]
       self.outputs_activations[output] = sigmoid(sum)
 
+    return self.outputs_activations
+
   def backpropagate(self, targets):
-    # Compute output error
-    delta_output = [0.0] * self.outputs
+    # Compute error at output units
+    output_deltas = [0.0] * self.outputs
     for output in range(self.outputs):
       error = targets[output] - self.outputs_activations[output]
-      delta_output[output] = deltaSigmoid(self.outputs_activations[output]) * error
+      output_deltas[output] = deltaSigmoid(self.outputs_activations[output]) * error
 
-    # Compute hidden unit error
-    delta_hidden = [0.0] * self.hidden
+    # Compute error at hidden units
+    hidden_deltas = [0.0] * self.hidden
     for hidden in range(self.hidden):
       error = 0.0
       for output in range(self.outputs):
-        error += delta_output[output] * self.output_weights[hidden][output]
-      delta_hidden[hidden] = deltaSigmoid(self.hidden_activations[hidden]) * error
+        error += output_deltas[output] * self.output_weights[hidden][output]
+      hidden_deltas[hidden] = deltaSigmoid(self.hidden_activations[hidden]) * error
 
-    # Update the input weights
+    # Update output unit weights
+    for hidden in range(self.hidden):
+      for output in range(self.outputs):
+        update = output_deltas[output] * self.hidden_activations[hidden]
+        self.output_weights[hidden][output] = self.output_weights[hidden][output] + self.alpha * update
+
+    # Update input unit weights
     for input in range(self.inputs):
       for hidden in range(self.hidden):
-        update = delta_hidden[hidden] * self.input_activations[input]
-        self.input_weights[input][hidden] + self.alpha * update
+        update = hidden_deltas[hidden] * self.input_activations[input]
+        self.input_weights[input][hidden] = self.input_weights[input][hidden] + self.alpha * update
 
     # Compute total error
     error = 0.0
@@ -85,13 +96,35 @@ class network:
 
   def test(self, patterns):
     for pattern in patterns:
-      print p[0], '->', self.update(p[0])
+      print(pattern[0], '->', self.update(pattern[0]))
 
-  def weights(self):
-    print 'Input weights'
-    for input in range(self.inputs):
-      print self.input_weights[input]
-    print 'Output Weights'
-    for hidden in range(self.hidden):
-      print self.output_weights[hidden]
+  def train(self, patterns):
+    for iteration in range(self.iterations):
+      error = 0.0
+      for pattern in patterns:
+        inputs = pattern[0]
+        targets = pattern[1]
+        self.update(inputs)
+        error += self.backpropagate(targets)
+      if iteration % 100 == 0:
+        print('error %-.5f' % error)
 
+def run():
+  # Teach network XOR function
+  patterns = [
+    [[0,0], [0]],
+    [[0,1], [1]],
+    [[1,0], [1]],
+    [[1,1], [0]]
+  ]
+
+  # Create network architecture consisting of 2 input nodes, 2 hidden units, and 1 output unit
+  n = network(2, 2, 1)
+
+  # Train the network
+  n.train(patterns)
+
+  # Test the network
+  n.test(patterns)
+
+run()
