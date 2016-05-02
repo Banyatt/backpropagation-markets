@@ -1,14 +1,13 @@
 import math
 from numpy import zeros
-from numpy import random, exp
+from numpy import random
+from prettytable import PrettyTable
 
 def sigmoid(x):
-    return math.tanh(x)
-    # return 1.0/(1.0+exp(-x))
+  return math.tanh(x)
 
 def deltaSigmoid(y):
-    # return y * (1.0 - y) 
-    return 1.0 - y**2
+  return 1.0 - y**2
 
 class network:
   def __init__(self, inputs, hidden, outputs):
@@ -189,7 +188,7 @@ def run():
     prediction_windows.append(complete_dataset[location - 4: location + 1])
   
   prediction_data = []
-  
+  predictions = []
   # Compute prediction windows in the form of [average, minimum, maximum]
   for window in prediction_windows:
     data = []
@@ -204,6 +203,26 @@ def run():
   # Test the network
   for i in xrange(len(prediction_data)):
     value = n.test(prediction_data[i])
-    print 'Normalized Prediction: ' + str(denormalize(value, prediction_data[i][1], prediction_data[i][2]))
+    predictions.append(denormalize(value, prediction_data[i][1], prediction_data[i][2]))
+    # print 'Normalized Prediction: ' + str(denormalize(value, prediction_data[i][1], prediction_data[i][2]))
+
+  table = PrettyTable()
+  x = PrettyTable(['Date', 'Predicted', 'Actual', 'Error Percentage'])
+  x.padding_width = 1
+  x.add_row(['April 12th', '%-.2f' % predictions[0], prediction_dataset[0], '%-.2f' % (((predictions[0] - prediction_dataset[0]) / (predictions[0] + prediction_dataset[0])) * 100)])
+  x.add_row(['April 13th', '%-.2f' % predictions[1], prediction_dataset[1], '%-.2f' % (((predictions[1] - prediction_dataset[1]) / (predictions[1] + prediction_dataset[1])) * 100)])
+  x.add_row(['April 14th', '%-.2f' % predictions[2], prediction_dataset[2], '%-.2f' % (((predictions[2] - prediction_dataset[2]) / (predictions[2] + prediction_dataset[2])) * 100)])
+  x.add_row(['April 15th', '%-.2f' % predictions[3], prediction_dataset[3], '%-.2f' % (((predictions[3] - prediction_dataset[3]) / (predictions[3] + prediction_dataset[3])) * 100)])
+  x.add_row(['April 18th', '%-.2f' % predictions[4], prediction_dataset[4], '%-.2f' % (((predictions[4] - prediction_dataset[4]) / (predictions[4] + prediction_dataset[4])) * 100)])
+  x.add_row(['April 19th', '%-.2f' % predictions[5], prediction_dataset[5], '%-.2f' % (((predictions[5] - prediction_dataset[5]) / (predictions[5] + prediction_dataset[5])) * 100)])
+  x.add_row(['April 20th', '%-.2f' % predictions[6], prediction_dataset[6], '%-.2f' % (((predictions[6] - prediction_dataset[6]) / (predictions[6] + prediction_dataset[6])) * 100)])
+  x.add_row(['April 21th', '%-.2f' % predictions[7], prediction_dataset[7], '%-.2f' % (((predictions[7] - prediction_dataset[7]) / (predictions[7] + prediction_dataset[7])) * 100)])
+  x.add_row(['April 22th', '%-.2f' % predictions[8], prediction_dataset[8], '%-.2f' % (((predictions[8] - prediction_dataset[8]) / (predictions[8] + prediction_dataset[8])) * 100)])
+  x.add_row(['April 25th', '%-.2f' % predictions[9], prediction_dataset[9], '%-.2f' % (((predictions[9] - prediction_dataset[9]) / (predictions[9] + prediction_dataset[9])) * 100)])
+  x.add_row(['April 26th', '%-.2f' % predictions[10], prediction_dataset[10], '%-.2f' % (((predictions[10] - prediction_dataset[10]) / (predictions[10] + prediction_dataset[10])) * 100)])
+  x.add_row(['April 27th', '%-.2f' % predictions[11], prediction_dataset[11], '%-.2f' % (((predictions[11] - prediction_dataset[11]) / (predictions[11] + prediction_dataset[11])) * 100)])
+  x.add_row(['April 28th', '%-.2f' % predictions[12], prediction_dataset[12], '%-.2f' % (((predictions[12] - prediction_dataset[12]) / (predictions[12] + prediction_dataset[12])) * 100)])
+  x.add_row(['April 29th', '%-.2f' % predictions[13], prediction_dataset[13], '%-.2f' % (((predictions[13] - prediction_dataset[13]) / (predictions[13] + prediction_dataset[13])) * 100)])
+  print x
 
 run()
